@@ -1,0 +1,415 @@
+publicstaticDataTable ExcelToDataSet(string filelocation, string tabname, string strType, string selectedDate)
+        {
+int counter = 0;
+            System.Data.DataSet dsExcel = null;
+string excelConnStr = "";
+string selectQry = "";
+            System.Data.OleDb.OleDbConnection excelConn = null;
+            System.Data.DataTable dtPatterns = new System.Data.DataTable();
+            System.Data.OleDb.OleDbCommand excelCommand = null;
+            System.Data.OleDb.OleDbDataAdapter excelDataAdapter = null;
+try
+            {
+                dsExcel = new System.Data.DataSet();
+                excelCommand = new System.Data.OleDb.OleDbCommand();
+                excelDataAdapter = new System.Data.OleDb.OleDbDataAdapter();
+
+if (filelocation.Contains("Bank of Japan"))
+                {
+
+                }
+elseif (filelocation.Contains("Monthend Custodian"))
+                {
+
+                }
+elseif (filelocation.Contains("US Bank"))
+                {
+
+                }
+
+elseif (filelocation.Contains("Morgan Stanley"))
+                {
+
+
+                }
+
+
+else{
+
+
+if (counter == 0)
+                {
+
+
+string extension = System.IO.Path.GetExtension(filelocation);
+
+string UcommitId = System.Security.Principal.WindowsIdentity.GetCurrent().Name;
+string CommitId = UcommitId.Substring(UcommitId.Length - 7).ToUpper();
+string FilePath = "C:\\Users\\" + CommitId + "\\Desktop\\EatonVance\\"+selectedDate;
+
+if (!System.IO.Directory.Exists(FilePath))
+                    System.IO.Directory.CreateDirectory(FilePath);
+
+
+
+int index = filelocation.LastIndexOf("\\");
+string filename = filelocation.Substring(index + 1);
+
+                filename = filename.Replace(extension, ".xlsx");
+
+String fromFile = filelocation;
+String toFile =FilePath+"\\"+filename;
+
+                filelocation = toFile;
+
+
+              Microsoft.Office.Interop.Excel.Application app = new Microsoft.Office.Interop.Excel.Application();
+                Microsoft.Office.Interop.Excel.Workbook wb = app.Workbooks.Open(fromFile, Type.Missing, Type.Missing, Type.Missing, Type.Missing, Type.Missing, Type.Missing, Type.Missing, Type.Missing, Type.Missing, Type.Missing, Type.Missing, Type.Missing, Type.Missing, Type.Missing);
+
+File.Delete(toFile);// this does not throw exception if file doesnt exist
+                wb.SaveAs(toFile, Microsoft.Office.Interop.Excel.XlFileFormat.xlWorkbookDefault, Type.Missing, Type.Missing, false, false, Microsoft.Office.Interop.Excel.XlSaveAsAccessMode.xlExclusive, Microsoft.Office.Interop.Excel.XlSaveConflictResolution.xlLocalSessionChanges, false, Type.Missing, Type.Missing, Type.Missing);
+                wb.Close(false, Type.Missing, Type.Missing);
+
+
+                app.Quit();
+              }
+              counter++;
+                }
+
+
+
+
+
+
+if (System.IO.Path.GetExtension(filelocation).ToString().ToUpper() == ".XLS")
+                    {
+                        excelConnStr = "Provider=Microsoft.Jet.OLEDB.4.0;Data Source=" + filelocation + ";Extended Properties=\"Excel 8.0;HDR=YES;IMEX=0;TypeGuessRows=0;Mode=Read;ReadOnly=True;ImportMixedTypes=Text\"";
+                    }
+if (System.IO.Path.GetExtension(filelocation).ToString().ToUpper() == ".XLSX" || System.IO.Path.GetExtension(filelocation).ToString().ToUpper() == ".XLSM")
+                    {
+                        excelConnStr = String.Format(@"Provider=Microsoft.ACE.OLEDB.12.0;Data Source={0};Extended Properties=""Excel 12.0 Xml;HDR=YES;ImportMixedTypes=Text;Mode=Read;ReadOnly=True;IMEX=0""", filelocation);
+                    }
+
+
+                excelConn = new System.Data.OleDb.OleDbConnection(excelConnStr);
+
+
+
+
+try
+                {
+                    excelConn.Open();
+                }
+catch(Exception )
+                {
+
+                }
+
+
+
+
+if (tabname == "")
+                {
+                    System.Data.DataTable objSheetNames = excelConn.GetSchema("Tables");
+if (strType == "Custody_Euroclear")
+                    {
+                        tabname = objSheetNames.Rows[1]["TABLE_NAME"].ToString().Replace("'", "").Replace("$", "");
+                    }
+else
+                    {
+                        tabname = objSheetNames.Rows[0]["TABLE_NAME"].ToString().Replace("'", "").Replace("$", "");
+                    }
+                }
+
+if (filelocation.Contains("Sumitomo Mitsui Trust Bank"))
+                {
+
+                }
+elseif (filelocation.Contains("Frost National Bank"))
+                {
+
+                }
+elseif (filelocation.Contains("First Clearing"))
+                {
+
+                }
+elseif (filelocation.Contains("Monthend Custodian"))
+                  {
+
+                  }
+
+elseif (filelocation.Contains("Morgan Stanley"))
+              {
+
+
+              }
+elseif (filelocation.Contains("US Bank"))
+              {
+
+              }
+elseif (filelocation.Contains("Bank of Japan"))
+              {
+
+              }
+else
+              {
+                    System.Data.DataTable objSheetNames = excelConn.GetSchema("Tables");
+                    tabname = objSheetNames.Rows[0]["TABLE_NAME"].ToString().Replace("'", "").Replace("$", "");
+                    excelConn.Close();
+
+                    tabname = tabname.Trim().Replace(" ", "");
+testExcel obj = newtestExcel();
+
+                    obj.Open_Rename_SheetName(filelocation, 1, tabname);
+                    excelConn.Open();
+                }
+
+
+
+                System.Data.DataTable objSheetName = excelConn.GetSchema("Tables");
+
+if (filelocation.Contains("BAML-US Trust"))
+                {
+string tab1 = objSheetName.Rows[0]["TABLE_NAME"].ToString().Replace("'", "").Replace("$", "");
+string tab2 = objSheetName.Rows[1]["TABLE_NAME"].ToString().Replace("'", "").Replace("$", "");
+if (tab1.Contains("StandardCashEquival"))
+                    {
+                        tabname = tab1;
+                     }
+elseif (tab2.Contains("StandardCashEquival"))
+                    {
+                        tabname= tab2;
+                    }
+
+
+                }
+elseif (filelocation.Contains("Fidelity - Wealth Central"))
+                {
+string tab1 = objSheetName.Rows[0]["TABLE_NAME"].ToString().Replace("'", "").Replace("$", "");
+string tab2 = objSheetName.Rows[1]["TABLE_NAME"].ToString().Replace("'", "").Replace("$", "");
+if (tab1.Contains("Criteria"))
+                    {
+                        tabname = tab2;
+                    }
+elseif (tab2.Contains("Criteria"))
+                    {
+                        tabname = tab1;
+                    }
+
+                }
+elseif (filelocation.Contains("Sumitomo Mitsui Trust Bank"))
+                {
+if (filelocation.Contains("JPY"))
+                    {
+                        tabname = "Spread sheet(JPY)";
+                    }
+elseif (filelocation.Contains("USD"))
+                    {
+                        tabname = "CashBalance";
+                    }
+
+                }
+elseif (filelocation.Contains("Monthend Custodian"))
+                {
+                        tabname = "Sheet1";
+
+                }
+
+elseif (filelocation.Contains("Morgan Stanley"))
+                {
+                    tabname = "Master Holdings";
+
+                }
+
+elseif (filelocation.Contains("Bank of Japan"))
+                {
+                    tabname = "Syntax_Balance";
+                }
+
+else
+                {
+                     tabname = objSheetName.Rows[0]["TABLE_NAME"].ToString().Replace("'", "").Replace("$", "");
+                }
+
+
+if (filelocation.Contains("Laird Norton Tyee"))
+                {
+List<string> sheet_name = ListSheetInExcel(filelocation);
+                }
+
+
+// string tabname2 = objSheetName.Rows[1]["TABLE_NAME"].ToString().Replace("'", "").Replace("$", "");
+
+if (strType == "Robeco&UnionBank")
+                {
+                    selectQry = "SELECT * FROM [" + tabname + "$A6:AT60000] where [CUSIP] is not null";
+                }
+else
+                {
+                       selectQry = "SELECT * FROM [" + tabname + "$A1:EB60000] ";
+                }
+
+                excelCommand = new System.Data.OleDb.OleDbCommand(selectQry, excelConn);
+                excelDataAdapter.SelectCommand = excelCommand;
+
+                excelDataAdapter.Fill(dtPatterns);
+                dsExcel.Tables.Add(dtPatterns);
+            }
+catch (Exception)
+            {
+
+
+
+MessageBox.Show("Could not read "+ filelocation +" .Please check the sheet name or Format of file .", "MESSANGER");
+
+            }
+finally
+            {
+                excelConn.Close();
+            }
+return dtPatterns;
+        }
+
+
+
+
+
+
+
+
+
+
+=========================================================================
+
+
+List<string> Morgan = newList<string>();
+                            Morgan.Add("473046332528");
+                            Morgan.Add("461037185");
+                            Morgan.Add("473044718");
+                            Morgan.Add("333131688");
+                            Morgan.Add("814012431");
+                            Morgan.Add("237116458");
+                            Morgan.Add("814013810");
+                            Morgan.Add("337142995");
+
+
+
+
+//    DataTable dt_MStanely = dtEaton_Morgan_CSB.DefaultView.ToTable("account", true, "account");
+
+for (int ms = 0; ms < Morgan.Count; ms++)
+                            {
+
+double cash = 0.00;
+double BDP = 0.00;
+for (int cb = 0; cb < dtEaton_Morgan_CSB.Rows.Count; cb++)
+                                {
+string chk1 = dtEaton_Morgan_CSB.Rows[cb][1].ToString();
+string chk2 = dtEaton_Morgan_CSB.Rows[cb][3].ToString();
+string chk3 = Morgan.ElementAt(ms);
+if (dtEaton_Morgan_CSB.Rows[cb][1].ToString() == Morgan.ElementAt(ms) && dtEaton_Morgan_CSB.Rows[cb][3].ToString() == "$$$$")
+                                    {
+string chk4 = dtEaton_Morgan_CSB.Rows[cb][11].ToString();
+if (dtEaton_Morgan_CSB.Rows[cb][11].ToString() == "dp")
+                                        {
+                                            cash = Convert.ToDouble(dtEaton_Morgan_CSB.Rows[cb][7].ToString());
+                                        }
+elseif (dtEaton_Morgan_CSB.Rows[cb][11].ToString() == "wd")
+                                        {
+                                            cash = Convert.ToDouble(dtEaton_Morgan_CSB.Rows[cb][7].ToString()) * (-1.00);
+                                        }
+
+                                    }
+
+
+if (dtEaton_Morgan_CSB.Rows[cb][1].ToString() == Morgan.ElementAt(ms) && dtEaton_Morgan_CSB.Rows[cb][3].ToString() == "BANK DEPOSIT PROGRAM")
+                                    {
+string chk6 = dtEaton_Morgan_CSB.Rows[cb][1].ToString();
+string chk5 = dtEaton_Morgan_CSB.Rows[cb][3].ToString();
+string chk4 = dtEaton_Morgan_CSB.Rows[cb][7].ToString();
+                                        BDP = Convert.ToDouble(dtEaton_Morgan_CSB.Rows[cb][7].ToString());
+                                    }
+
+================================================================
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Data;
+using System.Data.OleDb;
+using Excel = Microsoft.Office.Interop.Excel;
+using System.IO;
+using System.Drawing;
+using System.Windows.Forms;
+namespace Cash_Balance_Matching.common
+{
+publicstaticclassExcelHelper
+    {
+
+///<summary>
+/// function for export to excel
+///</summary>
+///<param name="dt"></param>
+///<param name="filePath"></param>
+///<param name="StartRowNumber"></param>
+///<param name="StartColumnNumber"></param>
+///<returns></returns>
+publicstaticstring ExportToExcel(DataTable dt, string filePath, int StartRowNumber, int StartColumnNumber)
+        {
+            #region Declarations
+            Excel.Workbook excelWorkBook = null;
+            Excel._Worksheet workSheet = null;
+            Excel.Application excelApp = new Excel.Application();
+int row = StartRowNumber;
+int col = StartColumnNumber;
+            #endregion
+
+            #region CodeBlock
+
+try
+            {
+                Excel.Application xlApp = new Microsoft.Office.Interop.Excel.Application();
+                Excel.Workbook xlWorkBook = null;
+object misvalue = System.Reflection.Missing.Value;
+                xlApp.DisplayAlerts = false;
+                xlWorkBook = xlApp.Workbooks.Add(misvalue);
+
+                Excel.Worksheet worksheets = (Excel.Worksheet)xlWorkBook.Worksheets.get_Item(1);
+
+// rows
+for (var i = 0; i < dt.Rows.Count; i++)
+                {
+
+for (var j = 0; j < dt.Columns.Count; j++)
+                    {
+                        workSheet.Cells[i + row, j + col] = dt.Rows[i][j]; //2,1
+                    }
+                }
+string strSavePath = filePath + "\\Robeco" + DateTime.Now;
+
+if (strSavePath != null)
+                {
+                    xlWorkBook.SaveAs(strSavePath, Excel.XlFileFormat.xlWorkbookDefault, "", misvalue, misvalue, misvalue, Excel.XlSaveAsAccessMode.xlExclusive, misvalue, misvalue, misvalue, misvalue, misvalue);
+                    xlWorkBook.Close(true, misvalue, misvalue);
+                    xlApp.Quit();
+                }
+else
+                {
+                    xlApp.Visible = true;
+                }
+return"Data copied Successfully.";
+            }
+catch (Exception ex)
+            {
+return ex.Message;
+            }
+finally
+            {
+ExcelHelper.release(workSheet);
+ExcelHelper.release(excelWorkBook);
+ExcelHelper.release(excelApp);
+            }
+            #endregion
+        }
